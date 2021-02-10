@@ -119,7 +119,10 @@ class RemoteConnectorPrimitive(ConnectorPrimitive):
         if not self.selected_resource:
             raise Exception("remote resource not exists!")
         try:
-            if self.selected_resource.reset() is False:
+            # do a hard reset (power cycle) if resource supports this
+            reset_method = "hard" if self.selected_resource.is_power_switchable else None
+            self.logger.prn_inf("Reset method: {}".format(reset_method))
+            if self.selected_resource.reset(reset_method) is False:
                 raise Exception("remote resources reset failed!")
         except Exception:
             self.logger.prn_inf("reset() failed")
